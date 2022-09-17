@@ -1,0 +1,53 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+#container-tab{
+    max-width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid red;
+}
+
+#main-tab{
+    border: 4px solid green;
+    /* width: 40rem; */
+}
+
+#header-tab{
+    background-color: rgb(25, 121, 25);
+    color: white;
+}
+
+#header-tab h1{
+    text-align: center;
+}
+
+#tabuleiro{
+    background-color: rgb(5, 69, 57);
+}
+
+
+.cmp{
+    width: 2rem;
+    height: 2rem;
+    margin: 1rem;
+    border-radius: 2px;
+}
+
+.cmp-f{
+    background-color:rgb(132, 247, 111);
+}
+
+.cmp-f:hover{
+    background-color:rgb(212, 254, 204);
+}
+
+.cmp-a{
+    background-color: rgb(250, 224, 224);
+}
