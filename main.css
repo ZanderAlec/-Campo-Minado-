@@ -32,12 +32,14 @@
     background-color: rgb(5, 69, 57);
 }
 
-
 .cmp{
     width: 2rem;
     height: 2rem;
     margin: 1rem;
     border-radius: 2px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 600;
 }
 
 .cmp-f{
@@ -49,5 +51,21 @@
 }
 
 .cmp-a{
-    background-color: rgb(250, 224, 224);
+    background-color: rgb(248, 235, 221);
+}
+
+.um{
+    color: rgb(30, 130, 252);
+}
+
+.dois{
+    color: rgb(25, 176, 73);
+}
+
+.tres{
+    color: rgb(222, 118, 32);
+}
+
+.quatro{
+    color: rgb(226, 45, 45);
 }

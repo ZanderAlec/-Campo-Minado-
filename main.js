@@ -3,6 +3,8 @@ const campos = document.querySelectorAll('.cmp');
 const tabuleiro = []; //Configuração do tabuleiro: -1 = bomba; 0 = campo neutro; > 0 = nº de bombas próximas.
 const camposAbrir = []; //Guarda os campos iguais a 0 p/ serme verificados
 
+let tabuVisua = [[],[],[],[],[],[],[]];
+
 //P/ fazer:=================
 
 //Se o campo clickado for bomba:
@@ -15,14 +17,8 @@ const camposAbrir = []; //Guarda os campos iguais a 0 p/ serme verificados
 
 //Colocar som ao clickar
 //Criar dificuldades diferentes
-
-//O Tabuleiro deve ser gerado quando o usuário der o primeiro click;
-//
-
-//Centralizar e mudar a cor dos numeros baseado no tamanho deles
 //Adicionar foto de minas nos campos de minas
 
-//Arrumar A GERAÇÃO DO TABULEIRO
 
 //Feito:===================
 //Gerar o tabulerio (v)
@@ -30,16 +26,21 @@ const camposAbrir = []; //Guarda os campos iguais a 0 p/ serme verificados
 //Se não for bomba, deve "debloquear" a área (V)
 //Se não for um numero, deve desbloquear todas as casa próximas. (horizontal e vertical) (v)
 //Deve continuar liberando os campos até que não tenha mais nenhum campo vazio que não seja número (v)
-
+//Arrumar A GERAÇÃO DO TABULEIRO(v);
+//Centralizar e mudar a cor dos numeros baseado no tamanho deles(v)
+//O Tabuleiro deve ser gerado quando o usuário der o primeiro click;(v)
 
 campos.forEach((td, index) => {
     td.addEventListener('click', () => {
         
         let rodando = true;
 
-        // console.log(index);
-        // console.log(campos[index]);
+        //primeiro click do usuário
+        if(tabuleiro[0] == undefined){
+            geraTabuleiro(index);
+        }
 
+        //clickou na bomba?
         if(verificaBomba(index)){
             console.log('Perdeu');
             return;
@@ -47,7 +48,7 @@ campos.forEach((td, index) => {
 
         abreCamposLaterais(index);
 
-        do{
+        do{//libera os campos adjacentes a todos os 0 encontrados
 
             if(camposAbrir.length != 0){   
                 console.log(camposAbrir[0]);
@@ -73,57 +74,68 @@ function limpaTabuleiro(){
 
 //Sorteia posições no tabuleiro para serem bombas
 //Inicialmente gera 14 bombas (fácil)
-//Soma +1 aos campos proximos a bomba
-function geraBombas(){
-    let valor;
+function geraBombas(click){
+    let indice;
 
     for(let i = 0; i < 14; i++){
-        valor = Math.floor(Math.random() * 72);
+      
+        do{
+            indice = Math.floor(Math.random() * 72);
 
-        tabuleiro[valor] = -1; 
+        }while(tabuleiro[indice] == -1 || indice == click);
 
-        if(valor-1 != 0 && tabuleiro[valor-1] != -1){
-            tabuleiro[valor-1]++;
-        }
-
-        if(valor+1 < 72 && tabuleiro[valor+1] != -1){
-            tabuleiro[valor+1]++;
-        }
-
-        if(valor+9 < 72 && tabuleiro[valor+9] != -1){
-            tabuleiro[valor+9]++;
-        }
-
-        if(valor-9 >= 0 && tabuleiro[valor-9] != -1){
-            tabuleiro[valor-9]++;
-        }
+        tabuleiro[indice] = -1; 
     }
 }
 
-//Função que chama todas as outras pra gerar o tabuleiro
-function geraTabuleiro(){
+//Soma +1 aos campos laterais a bomba.
+//Desconsidera diagonais
+function verificaBombaProxima(){
 
-    limpaTabuleiro();
-    geraBombas();
+    for(let i = 0; i < 72; i++){
+       if(tabuleiro[i] == -1){
+                                                //Prox linha
+            if(i-1 >= 0 && tabuleiro[i-1] != -1 && i%9 != 0){
+                tabuleiro[i-1]++;
+            }
+                                                //Prox linha
+            if(i+1 < 72 && tabuleiro[i+1] != -1 && (i+1)%9 != 0){
+                tabuleiro[i+1]++;
+            }
+
+            if(i+9 < 72 && tabuleiro[i+9] != -1){
+                tabuleiro[i+9]++;
+            }
+
+            if(i-9 >= 0 && tabuleiro[i-9] != -1){
+                tabuleiro[i-9]++;
+            }
+       }
+    }
 }
 
-geraTabuleiro();
+//chama todas as outras funções pra gerar o tabuleiro
+function geraTabuleiro(click){
 
-console.log(tabuleiro);
+    limpaTabuleiro();
+    geraBombas(click);
+    verificaBombaProxima();
+}
 
-//Função que verifica o campo que foi clickado. Se for bomba, retorna true.
+//Verifica se o campo clickado é uma bomba.
 function verificaBomba(posicao){
 
     return tabuleiro[posicao] == -1 ?  true : false ;
 }
 
-//Função que verifica o campo que foi clickado. Se for número, retorna true.
+//Verifica se o campo clickado é um número.
 function verificaNumero(posicao){
 
     return tabuleiro[posicao] > 0 ?  true : false ;
 }
 
-//função que muda a cor do campo(libera) e revela o que tem nele.
+//Muda a cor do campo(libera) e revela o que tem nele.
+//Muda a cor dos numeros;
 function mostraCampo(index){
 
     campos[index].classList.add("cmp-a");
@@ -131,6 +143,19 @@ function mostraCampo(index){
 
     if(verificaNumero(index)){
         campos[index].innerText = tabuleiro[index];
+
+        if(tabuleiro[index] == 1){
+            campos[index].classList.add("um");
+
+        }else if(tabuleiro[index] == 2){
+            campos[index].classList.add("dois");
+
+        }else if(tabuleiro[index] == 3){
+            campos[index].classList.add("tres");
+
+        }else if(tabuleiro[index] == 4){
+            campos[index].classList.add("quatro");
+        }
     }
 }
 
@@ -139,7 +164,7 @@ function checaAbertura(index){
     return campos[index].classList.contains("cmp-a") ? true : false;
 }
 
-//Função que recebe um index e abre os campos em cima desse index até encontrar um número.
+//recebe um index e abre os campos em cima desse index até encontrar um número.
 function abreCamposCima(index){
 
     for(let x = index-9;  x > -1; x-= 9){
@@ -158,6 +183,7 @@ function abreCamposCima(index){
     }
 }
 
+//Recebe um index e abre os campos embaixo desse index até achar um numero.
 function abreCamposBaixo(index){
 
     for(let x = index+9;  x < 72; x+= 9){
@@ -176,6 +202,7 @@ function abreCamposBaixo(index){
     }
 }
 
+//Recebe um index e abre os campos a direita desse index até achar um numero.
 function abreCamposDireita(index, max){
 
     for(let y = index+1; y < max; y++){
@@ -193,6 +220,7 @@ function abreCamposDireita(index, max){
     }
 }
 
+//Recebe um index e abre os campos a esquerda desse index até achar um numero.
 function abreCamposEsquerda(index, max){
 
     for(let y = index-1;  y >= max; y--){
@@ -213,7 +241,7 @@ function abreCamposEsquerda(index, max){
     return;
 }
 
-//Função que vai liberando os campos até encontrar valores números.
+//Função que vai liberando os campos até encontrar números.
 function abreCamposLaterais(index){
 
     //Limite do tabuleiro:
@@ -231,6 +259,5 @@ function abreCamposLaterais(index){
     abreCamposDireita(index, maxDir);
     abreCamposBaixo(index);
     abreCamposCima(index);
-
 }
 
