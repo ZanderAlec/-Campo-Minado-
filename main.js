@@ -1,9 +1,9 @@
 
 const campos = document.querySelectorAll('.cmp');
 const tabuleiro = []; //Configuração do tabuleiro: -1 = bomba; 0 = campo neutro; > 0 = nº de bombas próximas.
-const camposAbrir = []; //Guarda os campos iguais a 0 p/ serme verificados
+const camposAbrir = []; //Guarda os campos iguais a 0 p/ serem verificados
 
-let tabuVisua = [[],[],[],[],[],[],[]];
+let camposRestantes = 58; //Guarda o numero de campos que faltam ser abertos.
 
 //P/ fazer:=================
 
@@ -18,6 +18,7 @@ let tabuVisua = [[],[],[],[],[],[],[]];
 //Colocar som ao clickar
 //Criar dificuldades diferentes
 //Adicionar foto de minas nos campos de minas
+//Informar o numero de bombas
 
 
 //Feito:===================
@@ -30,13 +31,16 @@ let tabuVisua = [[],[],[],[],[],[],[]];
 //Centralizar e mudar a cor dos numeros baseado no tamanho deles(v)
 //O Tabuleiro deve ser gerado quando o usuário der o primeiro click;(v)
 
+
+
 campos.forEach((td, index) => {
     td.addEventListener('click', () => {
         
         let rodando = true;
 
-        //primeiro click do usuário
+        //primeiro click do usuário gera o tabuleiro
         if(tabuleiro[0] == undefined){
+            console.log("Campos Restantes:", camposRestantes);
             geraTabuleiro(index);
         }
 
@@ -60,6 +64,10 @@ campos.forEach((td, index) => {
             }
 
         }while(rodando);
+
+        if(camposRestantes === 0){
+            console.log("Parabéns! Você venceu!");
+        }
 
     });
 });
@@ -141,6 +149,8 @@ function mostraCampo(index){
     campos[index].classList.add("cmp-a");
     campos[index].classList.remove("cmp-f");
 
+    console.log("Campos Restantes:", camposRestantes);
+
     if(verificaNumero(index)){
         campos[index].innerText = tabuleiro[index];
 
@@ -172,11 +182,14 @@ function abreCamposCima(index){
         if(checaAbertura(x)){
             return;
         }
-
+        
         mostraCampo(x);
+        camposRestantes--;
+        console.log("Campos Restantes:", camposRestantes);
 
-        if(verificaNumero(x))
+        if(verificaNumero(x)){
           return;
+        }
 
         camposAbrir.push(x);
 
@@ -193,6 +206,8 @@ function abreCamposBaixo(index){
         }
 
         mostraCampo(x);
+        camposRestantes--;
+        console.log("Campos Restantes:", camposRestantes);
 
         if(verificaNumero(x))
             return;
@@ -212,6 +227,8 @@ function abreCamposDireita(index, max){
         }
 
         mostraCampo(y);
+        camposRestantes--;
+        console.log("Campos Restantes:", camposRestantes);
 
         if(verificaNumero(y))
             return;
@@ -230,6 +247,7 @@ function abreCamposEsquerda(index, max){
         }
 
         mostraCampo(y);
+        camposRestantes--;
 
         if(verificaNumero(y)){
             return;
@@ -241,19 +259,21 @@ function abreCamposEsquerda(index, max){
     return;
 }
 
-//Função que vai liberando os campos até encontrar números.
+//vai liberando os campos até encontrar números.
 function abreCamposLaterais(index){
 
     //Limite do tabuleiro:
     const maxDir = Math.floor(((index/9)+1))*9; 
     const maxEsq = Math.floor((index/9))*9; 
-    
-    if(verificaNumero(index)){
+
+    if(!checaAbertura(index)){
         mostraCampo(index);
-        return;
+        camposRestantes-=1;
     }
 
-    mostraCampo(index);
+    if(verificaNumero(index)){
+        return;
+    }
 
     abreCamposEsquerda(index, maxEsq);
     abreCamposDireita(index, maxDir);
