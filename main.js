@@ -1,5 +1,7 @@
 
 const campos = document.querySelectorAll('.cmp');
+const janelaModal = document.getElementById('modal-fim-jogo');
+const textoModal = document.getElementById('fim-text');
 const tabuleiro = []; //Configuração do tabuleiro: -1 = bomba; 0 = campo neutro; > 0 = nº de bombas próximas.
 const camposAbrir = []; //Guarda os campos iguais a 0 p/ serem verificados
 
@@ -7,18 +9,17 @@ let camposRestantes = 58; //Guarda o numero de campos que faltam ser abertos.
 
 //P/ fazer:=================
 
-//Se o campo clickado for bomba:
-//Mostra todas as posições de bomba
-//encerra o jogo.
-
-//Mensagem de derrota
-//Mensagem de vitória
 //Colocar marcadores de bomba;
 
 //Colocar som ao clickar
 //Criar dificuldades diferentes
-//Adicionar foto de minas nos campos de minas
+
 //Informar o numero de bombas
+
+//Botao de jogar novamente
+//Animações na abertura das bombas
+//Timer
+
 
 
 //Feito:===================
@@ -30,6 +31,13 @@ let camposRestantes = 58; //Guarda o numero de campos que faltam ser abertos.
 //Arrumar A GERAÇÃO DO TABULEIRO(v);
 //Centralizar e mudar a cor dos numeros baseado no tamanho deles(v)
 //O Tabuleiro deve ser gerado quando o usuário der o primeiro click;(v)
+//Se o campo clickado for bomba:
+//Mostra todas as posições de bomba(v)
+//encerra o jogo.(v)
+//Mensagem de derrota(v)
+//Mensagem de vitória(v)
+//Adicionar foto de minas nos campos de minas(v)
+
 
 
 
@@ -46,7 +54,8 @@ campos.forEach((td, index) => {
 
         //clickou na bomba?
         if(verificaBomba(index)){
-            console.log('Perdeu');
+            mostraTodasBombas(index);
+            mostraModalDerrota();
             return;
         }
 
@@ -66,7 +75,7 @@ campos.forEach((td, index) => {
         }while(rodando);
 
         if(camposRestantes === 0){
-            console.log("Parabéns! Você venceu!");
+            mostraModalVitoria();
         }
 
     });
@@ -146,10 +155,14 @@ function verificaNumero(posicao){
 //Muda a cor dos numeros;
 function mostraCampo(index){
 
-    campos[index].classList.add("cmp-a");
     campos[index].classList.remove("cmp-f");
 
-    console.log("Campos Restantes:", camposRestantes);
+    if(tabuleiro[index] == -1){
+        campos[index].innerText = '💣';
+        campos[index].classList.add("cmp-a-bomba");
+    }
+
+    campos[index].classList.add("cmp-a");
 
     if(verificaNumero(index)){
         campos[index].innerText = tabuleiro[index];
@@ -167,6 +180,7 @@ function mostraCampo(index){
             campos[index].classList.add("quatro");
         }
     }
+
 }
 
 //Verifica se o campo informado já foi aberto.
@@ -281,3 +295,23 @@ function abreCamposLaterais(index){
     abreCamposCima(index);
 }
 
+function mostraModalDerrota(){
+    janelaModal.style.display = 'block';
+    textoModal.innerHTML = "Derrota";
+}
+
+function mostraModalVitoria(){
+    janelaModal.style.display = 'block';
+    textoModal.innerHTML = `Vitória`;
+}
+
+function mostraTodasBombas(indice){
+    
+    mostraCampo(indice);
+
+    for(let i = 0; i < 72; i++){
+        if(tabuleiro[i] == -1){
+            mostraCampo(i);
+        }
+    }
+}
