@@ -4,19 +4,19 @@ const janelaModal = document.getElementById('modal-fim-jogo');
 const textoModal = document.getElementById('fim-text');
 const tabuleiro = []; //Configuração do tabuleiro: -1 = bomba; 0 = campo neutro; > 0 = nº de bombas próximas.
 const camposAbrir = []; //Guarda os campos iguais a 0 p/ serem verificados
-
 let camposRestantes = 58; //Guarda o numero de campos que faltam ser abertos.
+
+const resetBtm = document.getElementById("fim-btn");
+
 
 //P/ fazer:=================
 
 //Colocar marcadores de bomba;
 
-//Colocar som ao clickar
-//Criar dificuldades diferentes
+//Colocar seom ao clickar
 
 //Informar o numero de bombas
 
-//Botao de jogar novamente
 //Animações na abertura das bombas
 //Timer
 
@@ -37,10 +37,30 @@ let camposRestantes = 58; //Guarda o numero de campos que faltam ser abertos.
 //Mensagem de derrota(v)
 //Mensagem de vitória(v)
 //Adicionar foto de minas nos campos de minas(v)
+//Botao de jogar novamente(v);
 
 
 
+resetBtm.addEventListener('click', reiniciarJogo);
 
+//Reseta o tabuleiro e desativa o modal
+function reiniciarJogo(){
+    for(let i = 0; i < 72; i++){
+
+        console.log(i);
+        campos[i].classList.remove("cmp-a");
+        campos[i].classList.remove("cmp-a-bomba");
+        campos[i].classList.add("cmp-f");
+        campos[i].innerText = '';
+    }
+
+    desativaModal();
+    limpaTabuleiro();
+    camposRestantes = 58;
+}
+
+
+//Cria a interação com os campos do tabuleiro:
 campos.forEach((td, index) => {
     td.addEventListener('click', () => {
         
@@ -85,7 +105,7 @@ campos.forEach((td, index) => {
 function limpaTabuleiro(){
 
     for(let i = 0; i < 72; i++){
-        tabuleiro[i] = 0; 
+        tabuleiro[i] = undefined; 
     }
 }
 
@@ -132,9 +152,13 @@ function verificaBombaProxima(){
 }
 
 //chama todas as outras funções pra gerar o tabuleiro
-function geraTabuleiro(click){
+function geraTabuleiro(click){  
 
-    limpaTabuleiro();
+    //Define inicialmente, todas as posições como neutras
+    for(let i = 0; i < 72; i++){
+        tabuleiro[i] = 0; 
+    }
+
     geraBombas(click);
     verificaBombaProxima();
 }
@@ -157,9 +181,10 @@ function mostraCampo(index){
 
     campos[index].classList.remove("cmp-f");
 
-    if(tabuleiro[index] == -1){
+    if(verificaBomba(index)){
         campos[index].innerText = '💣';
         campos[index].classList.add("cmp-a-bomba");
+        return;
     }
 
     campos[index].classList.add("cmp-a");
@@ -305,12 +330,16 @@ function mostraModalVitoria(){
     textoModal.innerHTML = `Vitória`;
 }
 
+function desativaModal(){
+    janelaModal.style.display = 'none';
+}
+
 function mostraTodasBombas(indice){
     
     mostraCampo(indice);
 
     for(let i = 0; i < 72; i++){
-        if(tabuleiro[i] == -1){
+        if(verificaBomba(i)){
             mostraCampo(i);
         }
     }
